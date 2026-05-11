@@ -36,38 +36,34 @@
     <script type="module">
         import * as THREE from 'three';
         import { MindARThree } from 'mindar-image-three';
-        // Імпортуємо завантажувач 3D моделей
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
         const mindarThree = new MindARThree({
             container: document.querySelector("#container"),
-            imageTargetSrc: "targets.mind" // Файл маркера
+            imageTargetSrc: "targets.mind" 
         });
         const {renderer, scene, camera} = mindarThree;
         const anchor = mindarThree.addAnchor(0);
 
-        // Додаємо світло, щоб 3D модель було видно
-        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-        scene.add(light);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(0, 1, 0);
+        // Яскраве світло, щоб гуску було ідеально видно
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(0, 5, 5);
         scene.add(directionalLight);
 
-        // Налаштування завантажувача
         const gltfLoader = new GLTFLoader();
-        let gooseModel; // Змінна для зберігання моделі гуски
+        let gooseModel;
 
-        // 1. ЗАВАНТАЖЕННЯ 3D МОДЕЛІ (Гарантовано працює)
-        const modelUrl = 'https://threejs.org/examples/models/gltf/Duck/glTF-Binary/Duck.glb'; 
-        // Примітка: це офіційна модель Duck, яка в AR виглядає як чудова жовта качка/гуска
+        // 1. НАДІЙНЕ ПОСИЛАННЯ НА МОДЕЛЬ (не блокується)
+        const modelUrl = 'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Duck/glTF-Binary/Duck.glb'; 
         
         gltfLoader.load(modelUrl, (gltf) => {
             gooseModel = gltf.scene;
             
-            // Налаштування початкового розміру та позиції моделі
-            gooseModel.scale.set(0.2, 0.2, 0.2); // Підбираємо розмір
-            gooseModel.position.set(0, -0.3, 0);   // Трохи опускаємо
-            gooseModel.rotation.set(0, Math.PI, 0); // Розгортаємо до користувача
+            gooseModel.scale.set(0.2, 0.2, 0.2); 
+            gooseModel.position.set(0, -0.3, 0);   
+            gooseModel.rotation.set(0, Math.PI, 0); 
             
             anchor.group.add(gooseModel);
         });
@@ -83,13 +79,13 @@
                 if (gooseModel) {
                     const time = clock.getElapsedTime();
 
-                    // а) Анімація ПЕРЕМІЩЕННЯ (Гуска підстрибує вгору-вниз)
+                    // а) ПЕРЕМІЩЕННЯ (підстрибує)
                     gooseModel.position.y = -0.3 + Math.sin(time * 4) * 0.15;
 
-                    // б) Анімація ОБЕРТАННЯ (Гуска повільно крутиться навколо своєї осі)
+                    // б) ОБЕРТАННЯ
                     gooseModel.rotation.y += 0.01;
 
-                    // в) Анімація МАСШТАБУВАННЯ (Гуска пульсує, збільшується і зменшується)
+                    // в) МАСШТАБУВАННЯ (пульсація)
                     const s = 0.2 * (1 + Math.sin(time * 3) * 0.2); 
                     gooseModel.scale.set(s, s, s);
                 }
